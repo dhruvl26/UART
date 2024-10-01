@@ -1,0 +1,68 @@
+`timescale 1ns / 1ps
+
+module uart_tb;
+
+    localparam DBIT = 8;   
+    localparam SB_TICK = 16;  
+    localparam DVSR = 163;  
+    localparam DVSR_BIT = 8;  
+    localparam FIFO_W = 2;   
+
+    reg clk, reset;
+    reg rd_uart, wr_uart;
+    reg rx;
+    reg [7:0] w_data;
+    wire tx_full, rx_empty, tx;
+    wire [7:0] r_data;
+
+    always #5 clk = ~clk; 
+
+    uart #(
+        .DBIT(DBIT),
+        .SB_TICK(SB_TICK),
+        .DVSR(DVSR),
+        .DVSR_BIT(DVSR_BIT),
+        .FIFO_W(FIFO_W)
+    ) uut (
+        .clk(clk),
+        .reset(reset),
+        .rd_uart(rd_uart),
+        .wr_uart(wr_uart),
+        .rx(rx),
+        .w_data(w_data),
+        .tx_full(tx_full),
+        .rx_empty(rx_empty),
+        .tx(tx),
+        .r_data(r_data)
+    );
+
+    initial 
+    begin
+        clk = 0;
+        reset = 1;
+        rd_uart = 0;
+        wr_uart = 0;
+        rx = 1;
+        w_data = 8'b0;
+
+        #20 reset = 0;
+        #10 w_data = 8'hA5;
+        wr_uart = 1;
+        #10 wr_uart = 0;
+
+        #160 rx = 1;  
+        #160 rx = 0;  
+        #160 rx = 1;  
+        #160 rx = 0; 
+        #160 rx = 1;  
+        #160 rx = 0;  
+        #160 rx = 1;  
+        #160 rx = 0;  
+
+        #50 rd_uart = 1;
+        #10 rd_uart = 0;
+
+        #500;
+    end
+always #5 clk = ~clk; 
+endmodule
