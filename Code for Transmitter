@@ -1,7 +1,4 @@
 module uart_tx
-    #( parameter DBIT = 8,
-                 SB_TICK = 16
-    )
     
     (
       input wire clk, reset,
@@ -81,7 +78,7 @@ module uart_tx
                             begin
                                 s_next = 0;
                                 b_next = b_reg >> 1;
-                                if (n_reg==(DBIT-1))
+                                if (n_reg== 7)
                                     state_next = stop;
                                 else 
                                     n_next = n_reg + 1;
@@ -93,7 +90,7 @@ module uart_tx
                 begin
                     tx_next = 1'b1;
                     if (s_tick)
-                        if (s_reg==(SB_TICK-1))
+                        if (s_reg== 15)
                             begin
                                 state_next = idle;
                                 tx_done_tick = 1'b1;
@@ -104,7 +101,7 @@ module uart_tx
             endcase
         end
         
-    assign dout = b_reg;
+    assign tx = tx_reg;
 endmodule                                 
                           
                 
